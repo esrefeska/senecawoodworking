@@ -62,9 +62,9 @@
         <field name="picking_filter_id" eval="automatic_workflow_picking_filter" />
         <field name="sale_done" eval="0" />
         <field name="sale_done_filter_id" eval="automatic_workflow_sale_done_filter" />
-        <field
+        <!-- <field
             name="warning"
-        >Be careful, if you save the order with this setting, it could be auto-confirmed, even if you are editing it.</field>
+        >Be careful, if you save the order with this setting, it could be auto-confirmed, even if you are editing it.</field> -->
     </record>
     <record id="manual_validation" model="sale.workflow.process">
         <field name="name">Manual</field>
