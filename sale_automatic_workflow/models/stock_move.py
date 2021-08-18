@@ -13,5 +13,5 @@ class StockMove(models.Model):
         values = super()._get_new_picking_values()
         sale = self.group_id.sale_id
         if sale:
-            values["oca_workflow_process_id"] = sale.oca_workflow_process_id.id
+            values["workflow_process_id"] = sale.workflow_process_id.id
         return values

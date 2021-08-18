@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 @contextmanager
 def savepoint(cr):
-    """ Open a savepoint on the cursor, then yield.
+    """Open a savepoint on the cursor, then yield.
 
     Warning: using this method, the exceptions are logged then discarded.
     """
@@ -36,8 +36,8 @@ def force_company(env, company_id):
 
 
 class AutomaticWorkflowJob(models.Model):
-    """ Scheduler that will play automatically the validation of
-    invoices, pickings...  """
+    """Scheduler that will play automatically the validation of
+    invoices, pickings..."""
 
     _name = "automatic.workflow.job"
     _description = (
@@ -57,7 +57,7 @@ class AutomaticWorkflowJob(models.Model):
     @api.model
     def _validate_sale_orders(self, order_filter):
         sale_obj = self.env["sale.order"]
-        sales = sale_obj.search(order_filter,limit=200)
+        sales = sale_obj.search(order_filter)
         _logger.debug("Sale Orders to validate: %s", sales.ids)
         for sale in sales:
             with savepoint(self.env.cr), force_company(self.env, sale.company_id):
@@ -76,7 +76,7 @@ class AutomaticWorkflowJob(models.Model):
     @api.model
     def _create_invoices(self, create_filter):
         sale_obj = self.env["sale.order"]
-        sales = sale_obj.search(create_filter,limit=200)
+        sales = sale_obj.search(create_filter)
         _logger.debug("Sale Orders to create Invoice: %s", sales.ids)
         for sale in sales:
             with savepoint(self.env.cr), force_company(self.env, sale.company_id):
@@ -88,7 +88,7 @@ class AutomaticWorkflowJob(models.Model):
             [("id", "=", invoice.id)] + domain_filter
         ):
             return "{} {} job bypassed".format(invoice.display_name, invoice)
-        invoice.with_context(force_company=invoice.company_id.id).post()
+        invoice.with_company(invoice.company_id).action_post()
         return "{} {} validate invoice successfully".format(
             invoice.display_name, invoice
         )
@@ -96,7 +96,7 @@ class AutomaticWorkflowJob(models.Model):
     @api.model
     def _validate_invoices(self, validate_invoice_filter):
         move_obj = self.env["account.move"]
-        invoices = move_obj.search(validate_invoice_filter,limit=200)
+        invoices = move_obj.search(validate_invoice_filter)
         _logger.debug("Invoices to validate: %s", invoices.ids)
         for invoice in invoices:
             with savepoint(self.env.cr), force_company(self.env, invoice.company_id):
@@ -116,7 +116,7 @@ class AutomaticWorkflowJob(models.Model):
     @api.model
     def _validate_pickings(self, picking_filter):
         picking_obj = self.env["stock.picking"]
-        pickings = picking_obj.search(picking_filter,limit=200)
+        pickings = picking_obj.search(picking_filter)
         _logger.debug("Pickings to validate: %s", pickings.ids)
         for picking in pickings:
             with savepoint(self.env.cr):
@@ -134,7 +134,7 @@ class AutomaticWorkflowJob(models.Model):
     @api.model
     def _sale_done(self, sale_done_filter):
         sale_obj = self.env["sale.order"]
-        sales = sale_obj.search(sale_done_filter,limit=200)
+        sales = sale_obj.search(sale_done_filter)
         _logger.debug("Sale Orders to done: %s", sales.ids)
         for sale in sales:
             with savepoint(self.env.cr), force_company(self.env, sale.company_id):
@@ -142,7 +142,7 @@ class AutomaticWorkflowJob(models.Model):
 
     @api.model
     def run_with_workflow(self, sale_workflow):
-        workflow_domain = [("oca_workflow_process_id", "=", sale_workflow.id)]
+        workflow_domain = [("workflow_process_id", "=", sale_workflow.id)]
         if sale_workflow.validate_order:
             self._validate_sale_orders(
                 safe_eval(sale_workflow.order_filter_id.domain) + workflow_domain
