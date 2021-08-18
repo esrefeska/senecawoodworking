@@ -121,7 +121,7 @@ class TestMultiCompany(TestCommon):
                 "partner_id": customer.id,
                 "company_id": company.id,
                 "warehouse_id": warehouse.id,
-                "workflow_process_id": self.auto_wkf.id,
+                "oca_workflow_process_id": self.auto_wkf.id,
                 "order_line": [
                     (
                         0,

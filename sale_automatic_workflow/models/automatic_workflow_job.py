@@ -142,7 +142,7 @@ class AutomaticWorkflowJob(models.Model):
 
     @api.model
     def run_with_workflow(self, sale_workflow):
-        workflow_domain = [("workflow_process_id", "=", sale_workflow.id)]
+        workflow_domain = [("oca_workflow_process_id", "=", sale_workflow.id)]
         if sale_workflow.validate_order:
             self._validate_sale_orders(
                 safe_eval(sale_workflow.order_filter_id.domain) + workflow_domain

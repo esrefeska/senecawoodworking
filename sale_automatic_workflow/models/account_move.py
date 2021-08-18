@@ -9,6 +9,6 @@ from odoo import fields, models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    workflow_process_id = fields.Many2one(
+    oca_workflow_process_id = fields.Many2one(
         comodel_name="sale.workflow.process", string="Sale Workflow Process"
     )

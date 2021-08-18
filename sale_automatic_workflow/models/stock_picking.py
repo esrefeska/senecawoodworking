@@ -10,7 +10,7 @@ from odoo.tools import float_compare
 class StockPicking(models.Model):
     _inherit = "stock.picking"
 
-    workflow_process_id = fields.Many2one(
+    oca_workflow_process_id = fields.Many2one(
         comodel_name="sale.workflow.process", string="Sale Workflow Process"
     )
 

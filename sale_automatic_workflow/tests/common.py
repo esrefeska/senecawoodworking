@@ -37,7 +37,7 @@ class TestAutomaticWorkflowMixin(object):
                     },
                 )
             ],
-            "workflow_process_id": workflow.id,
+            "oca_workflow_process_id": workflow.id,
         }
         if override:
             values.update(override)

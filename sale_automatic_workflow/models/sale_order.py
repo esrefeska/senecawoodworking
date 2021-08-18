@@ -10,7 +10,7 @@ from odoo.tools import float_compare
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    workflow_process_id = fields.Many2one(
+    oca_workflow_process_id = fields.Many2one(
         comodel_name="sale.workflow.process",
         string="Automatic Workflow",
         ondelete="restrict", default=1
@@ -38,10 +38,10 @@ class SaleOrder(models.Model):
 
     def _prepare_invoice(self):
         invoice_vals = super()._prepare_invoice()
-        workflow = self.workflow_process_id
+        workflow = self.oca_workflow_process_id
         if not workflow:
             return invoice_vals
-        invoice_vals["workflow_process_id"] = workflow.id
+        invoice_vals["oca_workflow_process_id"] = workflow.id
         if self.neto_invoice_date:
             invoice_vals["invoice_date"] = self.neto_invoice_date
         elif workflow.invoice_date_is_order_date:
@@ -56,11 +56,11 @@ class SaleOrder(models.Model):
             invoice_vals["journal_id"] = workflow.property_journal_id.id
         return invoice_vals
 
-    @api.onchange("workflow_process_id")
+    @api.onchange("oca_workflow_process_id")
     def _onchange_workflow_process_id(self):
-        if not self.workflow_process_id:
+        if not self.oca_workflow_process_id:
             return
-        workflow = self.workflow_process_id
+        workflow = self.oca_workflow_process_id
         if workflow.picking_policy:
             self.picking_policy = workflow.picking_policy
         if workflow.team_id:
@@ -71,7 +71,7 @@ class SaleOrder(models.Model):
 
     def _create_invoices(self, grouped=False, final=False):
         for order in self:
-            if not order.workflow_process_id.invoice_service_delivery:
+            if not order.oca_workflow_process_id.invoice_service_delivery:
                 continue
             for line in order.order_line:
                 if line.qty_delivered_method == "manual" and not line.qty_delivered:
@@ -81,7 +81,7 @@ class SaleOrder(models.Model):
     def write(self, vals):
         if vals.get("state") == "sale" and vals.get("date_order"):
             sales_keep_order_date = self.filtered(
-                lambda sale: sale.workflow_process_id.invoice_date_is_order_date
+                lambda sale: sale.oca_workflow_process_id.invoice_date_is_order_date
             )
             if sales_keep_order_date:
                 new_vals = vals.copy()

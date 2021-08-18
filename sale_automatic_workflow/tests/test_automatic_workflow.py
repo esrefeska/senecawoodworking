@@ -18,7 +18,7 @@ class TestAutomaticWorkflow(TestCommon, TestAutomaticWorkflowMixin):
         sale = self.create_sale_order(workflow)
         sale._onchange_workflow_process_id()
         self.assertEqual(sale.state, "draft")
-        self.assertEqual(sale.workflow_process_id, workflow)
+        self.assertEqual(sale.oca_workflow_process_id, workflow)
         self.run_job()
         self.assertEqual(sale.state, "sale")
         self.assertTrue(sale.picking_ids)
@@ -35,7 +35,7 @@ class TestAutomaticWorkflow(TestCommon, TestAutomaticWorkflowMixin):
         sale._onchange_workflow_process_id()
         self.assertEqual(sale.picking_policy, "one")
         workflow2 = self.create_full_automatic(override={"picking_policy": "direct"})
-        sale.workflow_process_id = workflow2.id
+        sale.oca_workflow_process_id = workflow2.id
         sale._onchange_workflow_process_id()
         self.assertEqual(sale.picking_policy, "direct")
 
@@ -52,7 +52,7 @@ class TestAutomaticWorkflow(TestCommon, TestAutomaticWorkflowMixin):
         self.assertTrue(sale.invoice_ids)
         invoice = sale.invoice_ids
         self.assertEqual(invoice.invoice_date, last_week_time.date())
-        self.assertEqual(invoice.workflow_process_id, sale.workflow_process_id)
+        self.assertEqual(invoice.oca_workflow_process_id, sale.oca_workflow_process_id)
 
     def test_create_invoice_from_sale_order(self):
         workflow = self.create_full_automatic()
@@ -114,7 +114,7 @@ class TestAutomaticWorkflow(TestCommon, TestAutomaticWorkflowMixin):
         self.assertFalse(sale.picking_ids)
         self.assertTrue(sale.invoice_ids)
         invoice = sale.invoice_ids
-        self.assertEqual(invoice.workflow_process_id, sale.workflow_process_id)
+        self.assertEqual(invoice.oca_workflow_process_id, sale.oca_workflow_process_id)
 
     def test_journal_on_invoice(self):
         sale_journal = self.env["account.journal"].search(
