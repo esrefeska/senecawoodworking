@@ -14,11 +14,12 @@ class SaleOrder(models.Model):
         comodel_name="sale.workflow.process",
         string="Automatic Workflow",
         ondelete="restrict",
+        default=1
     )
     all_qty_delivered = fields.Boolean(
         compute="_compute_all_qty_delivered",
         string="All quantities delivered",
-        store=True,
+        store=True
     )
 
     # TODO: v15 -> make this module dependent on sale_delivery_state and
